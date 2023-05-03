@@ -1,24 +1,24 @@
 module.exports = {
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "node": true
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "airbnb-base"
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'airbnb-base',
   ],
-  "overrides": [
+  overrides: [
   ],
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
-  "plugins": [
-    "react"
+  plugins: [
+    'react',
   ],
-  "rules": {
-    "eslint no-underscore-dangle": ["error", { "allow": ["foo_", "_bar"] }]
-  }
-}
+  rules: {
+    'no-underscore-dangle': ['error', { allow: ['_id'] }],
+  },
+};
