@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/Alexandr-Mokhov/express-mesto-gha/issues"
   },
-  "homepage": "https://github.com/Alexandr-Mokhov/express-mesto-gha#readme"
+  "homepage": "https://github.com/Alexandr-Mokhov/express-mesto-gha#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
 }
