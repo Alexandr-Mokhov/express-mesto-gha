@@ -1,14 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./routes/index');
 const path = require('path');
 const bodyParser = require('body-parser');
+const router = require('./routes/index');
 
+const { PORT = 3000 } = process.env;
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+mongoose.connect('mongodb://127.0.0.1/mestodb');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(router);
 
-app.listen(3000, () => console.log('test'));
+app.listen(PORT, () => console.log('test1'));

@@ -1,35 +1,37 @@
-const user = require('../models/user');
+const User = require('../models/user');
 
 const getUsers = (req, res) => {
-  user.find({})
+  User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: 'Error' }));
+    .catch(() => res.status(500).send({ message: 'Error getUsers' }));
 };
 
 const getUsersById = (req, res) => {
   const { id } = req.params;
-  user.findById(id)
+  // console.log();
+  User.findById(id)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'User is not found' });
-      } else {
-        res.send(user);
+        res.status(404).send({ message: 'User is not found' });
+        return;
       }
+      res.send(user);
     })
-    .catch((err) => res.status(500).send({ message: 'Error' }));
+    .catch(() => res.status(500).send({ message: 'Error getUsersById' }));
 };
 
-const postUsers = (req, res) => {
+const createUsers = (req, res) => {
   const data = req.body;
-  user.create(data)
+  // console.log(data);
+  User.create(data)
     .then((user) => {
       res.status(201).send(user);
     })
-    .catch((err) => res.status(500).send({ message: 'Error' }));
+    .catch(() => res.status(500).send({ message: 'Error createUsers' }));
 };
 
 module.exports = {
   getUsers,
   getUsersById,
-  postUsers,
+  createUsers,
 };
