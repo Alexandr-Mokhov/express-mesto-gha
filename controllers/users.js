@@ -6,10 +6,10 @@ const getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Error getUsers' }));
 };
 
-const getUsersById = (req, res) => {
-  const { id } = req.params;
-  // console.log();
-  User.findById(id)
+const getUserById = (req, res) => {
+  const { userId } = req.params;
+
+  User.findById(userId)
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'User is not found' });
@@ -20,18 +20,36 @@ const getUsersById = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Error getUsersById' }));
 };
 
-const createUsers = (req, res) => {
+const createUser = (req, res) => {
   const data = req.body;
-  // console.log(data);
+
   User.create(data)
-    .then((user) => {
-      res.status(201).send(user);
-    })
+    .then((user) => res.status(201).send(user))
     .catch(() => res.status(500).send({ message: 'Error createUsers' }));
+};
+
+const updateUserInfo = (req, res) => {
+  const { _id } = req.user;
+  const dataUser = req.body;
+
+  User.findByIdAndUpdate(_id, dataUser, { new: true })
+    .then((user) => res.status(201).send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Error updateUserInfo' }));
+};
+
+const updateUserAvatar = (req, res) => {
+  const { _id } = req.user;
+  const dataAvatar = req.body;
+
+  User.findByIdAndUpdate(_id, dataAvatar, { new: true })
+    .then((user) => res.status(201).send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'Error updateUserAvatar' }));
 };
 
 module.exports = {
   getUsers,
-  getUsersById,
-  createUsers,
+  getUserById,
+  createUser,
+  updateUserInfo,
+  updateUserAvatar,
 };
