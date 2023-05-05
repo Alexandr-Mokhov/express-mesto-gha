@@ -10,6 +10,10 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
+  if (name.length < 2 || name.length > 30 || !link) {
+    res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при создании карточки.' });
+    return;
+  }
   cardModel.create({ name, link, owner })
     .then((card) => res.status(201).send({ card }))
     .catch((err) => {

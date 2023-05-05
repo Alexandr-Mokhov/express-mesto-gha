@@ -15,7 +15,7 @@ const getUserById = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {              // по заданию это условие вроде как не нужно
+      if (err.name === 'CastError') { // по заданию это условие вроде как не нужно
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при запросе профиля.' });
         return;
       }
@@ -29,6 +29,11 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   const data = req.body;
+  if (data.name.length < 2 || data.name.length > 30
+    || data.about.length < 2 || data.about.length > 30) {
+    res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при создании профиля.' });
+    return;
+  }
   userModel.create(data)
     .then((user) => {
       res.status(201).send(user);
@@ -45,10 +50,15 @@ const createUser = (req, res) => {
 const updateUserInfo = (req, res) => {
   const { _id } = req.user;
   const dataUser = req.body;
+  if (dataUser.name.length < 2 || dataUser.name.length > 30
+    || dataUser.about.length < 2 || dataUser.about.length > 30) {
+    res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+    return;
+  }
   userModel.findByIdAndUpdate(_id, dataUser, { new: true })
     .orFail()
     .then((user) => {
-      res.status(201).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -68,7 +78,7 @@ const updateUserAvatar = (req, res) => {
   const dataAvatar = req.body;
   userModel.findByIdAndUpdate(_id, dataAvatar, { new: true })
     .orFail()
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
