@@ -29,8 +29,8 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   const data = req.body;
-  if (data.name.length < 2 || data.name.length > 30
-    || data.about.length < 2 || data.about.length > 30) {
+  if (!data.name || data.name.length < 2 || data.name.length > 30
+    || !data.about || data.about.length < 2 || data.about.length > 30 || !data.avatar) {
     res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при создании профиля.' });
     return;
   }
@@ -50,8 +50,8 @@ const createUser = (req, res) => {
 const updateUserInfo = (req, res) => {
   const { _id } = req.user;
   const dataUser = req.body;
-  if (dataUser.name.length < 2 || dataUser.name.length > 30
-    || dataUser.about.length < 2 || dataUser.about.length > 30) {
+  if (!dataUser.name || dataUser.name.length < 2 || dataUser.name.length > 30
+    || !dataUser.about || dataUser.about.length < 2 || dataUser.about.length > 30) {
     res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
     return;
   }
