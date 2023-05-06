@@ -34,6 +34,7 @@ const deleteCard = (req, res) => {
     .orFail()
     .then((card) => res.status(OK_STATUS).send(card))
     .catch((err) => {
+      // console.log(err.name);
       if (err.name === 'CastError') {
         res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные для удаления карточки.' });
         return;
