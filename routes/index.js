@@ -1,11 +1,12 @@
 const router = require('express').Router();
 const userRouter = require('./users');
 const cardRouter = require('./cards');
+const { NOT_FOUND_ERROR } = require('../statusCodes');
 
-router.use(userRouter);
-router.use(cardRouter);
+router.use('/users', userRouter);
+router.use('/cards', cardRouter);
 router.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Not Found' });
+  res.status(NOT_FOUND_ERROR).send({ message: 'Not Found' });
 });
 
 module.exports = router;
