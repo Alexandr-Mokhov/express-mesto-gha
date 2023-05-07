@@ -15,6 +15,3 @@ app.use(express.json());
 app.use(router);
 
 app.listen(PORT, () => console.log(`Enabled port ${PORT}`));
-
-// BSON пытался удалить через npm uninstall bson, но появляется ошибка и сервер перестает работать
-// пришлось вернуть обратно
