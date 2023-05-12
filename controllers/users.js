@@ -1,16 +1,14 @@
 const userModel = require('../models/user');
+const { handleResponseError } = require('../utils/utils');
 const {
   OK_STATUS,
   CREATED_STATUS,
-  BAD_REQUEST_ERROR,
-  NOT_FOUND_ERROR,
-  INTERNAL_SERVER_ERROR,
 } = require('../statusCodes');
 
 const getUsers = (req, res) => {
   userModel.find({})
     .then((users) => res.status(OK_STATUS).send(users))
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' }));
+    .catch((err) => handleResponseError(err, res));
 };
 
 const getUserById = (req, res) => {
@@ -18,30 +16,14 @@ const getUserById = (req, res) => {
   userModel.findById(userId)
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при запросе профиля.' });
-        return;
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь по указанному _id не найден.' });
-        return;
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
-    });
+    .catch((err) => handleResponseError(err, res));
 };
 
 const createUser = (req, res) => {
   const data = req.body;
   userModel.create(data)
     .then((user) => res.status(CREATED_STATUS).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при создании профиля.' });
-        return;
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
-    });
+    .catch((err) => handleResponseError(err, res));
 };
 
 const updateUserInfo = (req, res) => {
@@ -50,17 +32,7 @@ const updateUserInfo = (req, res) => {
   userModel.findByIdAndUpdate(_id, dataUser, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-        return;
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь по указанному _id не найден.' });
-        return;
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
-    });
+    .catch((err) => handleResponseError(err, res));
 };
 
 const updateUserAvatar = (req, res) => {
@@ -69,17 +41,7 @@ const updateUserAvatar = (req, res) => {
   userModel.findByIdAndUpdate(_id, dataAvatar, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-        return;
-      }
-      if (err.name === 'DocumentNotFoundError') {
-        res.status(NOT_FOUND_ERROR).send({ message: 'Пользователь по указанному _id не найден.' });
-        return;
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
-    });
+    .catch((err) => handleResponseError(err, res));
 };
 
 module.exports = {
