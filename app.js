@@ -7,7 +7,7 @@ const app = express();
 
 mongoose.connect('mongodb://127.0.0.1/mestodb');
 app.use((req, res, next) => {
-  req.user = { _id: '645635b09b3f1679c7a962b7' };
+  req.user = { _id: '6464ace0089171fb0eef0188' };
   next();
 });
 

@@ -61,13 +61,13 @@ const login = (req, res) => {
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
-      // const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      // const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' }); здесь
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Неправильные почта или пароль'));
           }
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' }); // или лучше здесь?
           return res.send({ token }); // передать через куки
         });
     })
