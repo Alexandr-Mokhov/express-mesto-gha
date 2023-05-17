@@ -5,6 +5,7 @@ const {
   createUser,
   updateUserInfo,
   updateUserAvatar,
+  login,
 } = require('../controllers/users');
 
 router.get('/', getUsers);
@@ -12,5 +13,6 @@ router.get('/:userId', getUserById);
 router.post('/', createUser);
 router.patch('/me', updateUserInfo);
 router.patch('/me/avatar', updateUserAvatar);
+router.get('/', login);
 
 module.exports = router;
