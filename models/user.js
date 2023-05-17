@@ -25,6 +25,20 @@ const userSchema = new mongoose.Schema({
       protocols: ['http', 'https'],
     },
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: (v) => validator.isEmail(v),
+      message: 'Некорректный email',
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 4,
+  },
 }, { versionKey: false });
 
 module.exports = mongoose.model('user', userSchema);
