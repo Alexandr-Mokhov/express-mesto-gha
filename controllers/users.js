@@ -22,6 +22,7 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
+  // if (req.body.password.validate) {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => userModel.create({
       name: req.body.name,
@@ -32,6 +33,7 @@ const createUser = (req, res) => {
     }))
     .then((user) => res.status(CREATED_STATUS).send(user))
     .catch((err) => handleResponseError(err, res));
+  // }
 };
 
 const updateUserInfo = (req, res) => {
@@ -54,10 +56,8 @@ const updateUserAvatar = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
   userModel.findOne({ email })
     .then((user) => {
-      console.log(user);
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
@@ -68,7 +68,7 @@ const login = (req, res) => {
             return Promise.reject(new Error('Неправильные почта или пароль'));
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res.send({ token });
+          return res.send({ token }); // передать через куки
         });
     })
     .catch((err) => res.status(401).send({ message: err.message }));
