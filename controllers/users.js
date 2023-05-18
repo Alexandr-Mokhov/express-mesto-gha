@@ -22,7 +22,7 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  // if (req.body.password.validate) {
+  // if (req.body.password.validate) { //почему пропускает пароль меньше 4х знаков
   bcrypt.hash(req.body.password, 10)
     .then((hash) => userModel.create({
       name: req.body.name,
@@ -38,8 +38,8 @@ const createUser = (req, res) => {
 
 const updateUserInfo = (req, res) => {
   const { _id } = req.user;
-  const dataUser = req.body;
-  userModel.findByIdAndUpdate(_id, dataUser, { new: true, runValidators: true })
+  const { name, about } = req.body;
+  userModel.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
     .catch((err) => handleResponseError(err, res));
@@ -47,8 +47,8 @@ const updateUserInfo = (req, res) => {
 
 const updateUserAvatar = (req, res) => {
   const { _id } = req.user;
-  const dataAvatar = req.body;
-  userModel.findByIdAndUpdate(_id, dataAvatar, { new: true, runValidators: true })
+  const { avatar } = req.body;
+  userModel.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
     .catch((err) => handleResponseError(err, res));
@@ -74,6 +74,13 @@ const login = (req, res) => {
     .catch((err) => res.status(401).send({ message: err.message }));
 };
 
+const getCurrentUser = (req, res) => {
+  userModel.findById(req.user._id)
+    .orFail()
+    .then((user) => res.status(OK_STATUS).send(user))
+    .catch((err) => handleResponseError(err, res));
+};
+
 module.exports = {
   getUsers,
   getUserById,
@@ -81,4 +88,11 @@ module.exports = {
   updateUserInfo,
   updateUserAvatar,
   login,
+  getCurrentUser,
 };
+
+// {
+//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+// eyJfaWQiOiI2NDY0YWNlMDA4OTE3MWZiMGVlZjAxODgiLCJpYXQiOjE2ODQzMzg2NzEsImV4cCI6MTY4NDk0MzQ3MX0.
+// VDCqaqHhnfvTfNAZcmjyezL6Ll-kDpa1PafgTwhpE6E"
+// }
