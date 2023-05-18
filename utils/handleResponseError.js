@@ -1,6 +1,7 @@
 const {
   BAD_REQUEST_ERROR,
   UNAUTHORIZED_ERROR,
+  FORBIDDEN_ERROR,
   NOT_FOUND_ERROR,
   CONFLICTING_REQUEST_ERROR,
   INTERNAL_SERVER_ERROR,
@@ -13,6 +14,13 @@ function handleResponseError(err, res) {
   }
   if (err.name === 'ValidationError' || err.name === 'CastError' || err.message === 'user validation failed: email: Некорректный email') {
     res.status(BAD_REQUEST_ERROR).send({ message: 'Переданы некорректные данные.' });
+    return;
+  }
+  if (err.message === 'FORBIDDEN_ERROR') {
+    res.status(FORBIDDEN_ERROR).send({ message: 'Удаление карточки другого пользователя запрещено.' });
+  }
+  if (err.message === 'Authorization Required') {
+    res.status(UNAUTHORIZED_ERROR).send({ message: 'Требуется авторизация.' });
     return;
   }
   if (err.message === 'Authorisation Error') {

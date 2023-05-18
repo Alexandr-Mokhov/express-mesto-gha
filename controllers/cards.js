@@ -35,7 +35,7 @@ const deleteCard = (req, res, next) => {
           .then((cardDelete) => res.status(OK_STATUS).send(cardDelete))
           .catch(next);
       }
-      return Promise.reject(new Error('Нельзя удалять чужую карточку'));
+      return Promise.reject(new Error('FORBIDDEN_ERROR'));
     })
     .catch(next);
 };

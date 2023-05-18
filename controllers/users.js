@@ -70,7 +70,7 @@ const login = (req, res, next) => {
             return Promise.reject(new Error('Authorisation Error'));
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res.send({ token }); // передать через куки
+          return res.send({ token }); // попробую передать через куки
         })
         .catch(next);
     })
