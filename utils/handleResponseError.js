@@ -1,5 +1,6 @@
 const {
   BAD_REQUEST_ERROR,
+  UNAUTHORIZED_ERROR,
   NOT_FOUND_ERROR,
   CONFLICTING_REQUEST_ERROR,
   INTERNAL_SERVER_ERROR,
@@ -15,7 +16,7 @@ function handleResponseError(err, res) {
     return;
   }
   if (err.message === 'Authorisation Error') {
-    res.status(BAD_REQUEST_ERROR).send({ message: 'Неправильные почта или пароль.' });
+    res.status(UNAUTHORIZED_ERROR).send({ message: 'Неправильные почта или пароль.' });
     return;
   }
   if (err.code === 11000) {

@@ -29,12 +29,12 @@ const deleteCard = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (card.owner.toString() === payload._id) {
-        cardModel.findByIdAndRemove(cardId)
+        return cardModel
+          .findByIdAndRemove(cardId)
           .orFail()
           .then((cardDelete) => res.status(OK_STATUS).send(cardDelete))
           .catch(next);
       }
-
       return Promise.reject(new Error('Нельзя удалять чужую карточку'));
     })
     .catch(next);

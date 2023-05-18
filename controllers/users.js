@@ -21,7 +21,6 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  // if (req.body.password.validate) { //почему пропускает пароль меньше 4х знаков
   bcrypt.hash(req.body.password, 10)
     .then((hash) => userModel.create({
       name: req.body.name,
@@ -30,9 +29,13 @@ const createUser = (req, res, next) => {
       email: req.body.email,
       password: hash,
     }))
-    .then((user) => res.status(CREATED_STATUS).send(user))
+    .then((user) => res.status(CREATED_STATUS).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
     .catch(next);
-  // }
 };
 
 const updateUserInfo = (req, res, next) => {
@@ -90,9 +93,3 @@ module.exports = {
   login,
   getCurrentUser,
 };
-
-// {
-//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
-// eyJfaWQiOiI2NDY0YWNlMDA4OTE3MWZiMGVlZjAxODgiLCJpYXQiOjE2ODQzMzg2NzEsImV4cCI6MTY4NDk0MzQ3MX0.
-// VDCqaqHhnfvTfNAZcmjyezL6Ll-kDpa1PafgTwhpE6E"
-// }
