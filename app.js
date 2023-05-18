@@ -6,10 +6,6 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 mongoose.connect('mongodb://127.0.0.1/mestodb');
-// app.use((req, res, next) => {
-//   req.user = { _id: '6464ace0089171fb0eef0188' };
-//   next();
-// });
 
 app.use(express.json());
 app.use(router);

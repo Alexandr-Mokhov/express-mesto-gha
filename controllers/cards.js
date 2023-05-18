@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const cardModel = require('../models/card');
 const { handleResponseError } = require('../utils/utils');
 const {
@@ -22,9 +23,21 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
-  cardModel.findByIdAndRemove(cardId)
+  const { authorization } = req.headers;
+  const token = authorization.replace('Bearer ', '');
+  const payload = jwt.verify(token, 'some-secret-key');
+  cardModel.findById(cardId)
     .orFail()
-    .then((card) => res.status(OK_STATUS).send(card))
+    .then((card) => {
+      if (card.owner.toString() === payload._id) {
+        cardModel.findByIdAndRemove(cardId)
+          .orFail()
+          .then((cardDelete) => res.status(OK_STATUS).send(cardDelete))
+          .catch((err) => handleResponseError(err, res));
+      }
+
+      return Promise.reject(new Error('Нельзя удалять чужую карточку'));
+    })
     .catch((err) => handleResponseError(err, res));
 };
 
