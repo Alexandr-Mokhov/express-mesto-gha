@@ -1,27 +1,26 @@
 const jwt = require('jsonwebtoken');
 const cardModel = require('../models/card');
-const { handleResponseError } = require('../utils/utils');
 const {
   OK_STATUS,
   CREATED_STATUS,
 } = require('../statusCodes');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   cardModel.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.status(OK_STATUS).send(cards))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   cardModel.create({ name, link, owner })
     .then((card) => res.status(CREATED_STATUS).send(card))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { authorization } = req.headers;
   const token = authorization.replace('Bearer ', '');
@@ -33,15 +32,15 @@ const deleteCard = (req, res) => {
         cardModel.findByIdAndRemove(cardId)
           .orFail()
           .then((cardDelete) => res.status(OK_STATUS).send(cardDelete))
-          .catch((err) => handleResponseError(err, res));
+          .catch(next);
       }
 
       return Promise.reject(new Error('Нельзя удалять чужую карточку'));
     })
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   cardModel.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -49,10 +48,10 @@ const likeCard = (req, res) => {
   )
     .orFail()
     .then((card) => res.status(CREATED_STATUS).send(card))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   cardModel.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -60,7 +59,7 @@ const dislikeCard = (req, res) => {
   )
     .orFail()
     .then((card) => res.status(OK_STATUS).send(card))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
 module.exports = {

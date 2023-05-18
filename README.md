@@ -1,5 +1,5 @@
 [![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
-# Практическая работа №13: Проект Mesto фронтенд + бэкенд
+# Практическая работа №14: Проект Mesto фронтенд + бэкенд
 
 
 ## Директории

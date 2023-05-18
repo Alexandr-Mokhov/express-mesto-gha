@@ -1,27 +1,26 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
-const { handleResponseError } = require('../utils/utils');
 const {
   OK_STATUS,
   CREATED_STATUS,
 } = require('../statusCodes');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   userModel.find({})
     .then((users) => res.status(OK_STATUS).send(users))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { userId } = req.params;
   userModel.findById(userId)
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   // if (req.body.password.validate) { //почему пропускает пароль меньше 4х знаков
   bcrypt.hash(req.body.password, 10)
     .then((hash) => userModel.create({
@@ -32,53 +31,54 @@ const createUser = (req, res) => {
       password: hash,
     }))
     .then((user) => res.status(CREATED_STATUS).send(user))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
   // }
 };
 
-const updateUserInfo = (req, res) => {
+const updateUserInfo = (req, res, next) => {
   const { _id } = req.user;
   const { name, about } = req.body;
   userModel.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const { _id } = req.user;
   const { avatar } = req.body;
   userModel.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   userModel.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new Error('Authorisation Error'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return Promise.reject(new Error('Authorisation Error'));
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
           return res.send({ token }); // передать через куки
-        });
+        })
+        .catch(next);
     })
-    .catch((err) => res.status(401).send({ message: err.message }));
+    .catch(next);
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   userModel.findById(req.user._id)
     .orFail()
     .then((user) => res.status(OK_STATUS).send(user))
-    .catch((err) => handleResponseError(err, res));
+    .catch(next);
 };
 
 module.exports = {
