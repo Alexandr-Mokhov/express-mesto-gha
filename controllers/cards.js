@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const cardModel = require('../models/card');
 const {
   OK_STATUS,
@@ -22,15 +21,12 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const { authorization } = req.headers;
-  const token = authorization.replace('Bearer ', '');
-  const payload = jwt.verify(token, 'some-secret-key');
   cardModel.findById(cardId)
     .orFail()
     .then((card) => {
-      if (card.owner.toString() === payload._id) {
+      if (card.owner.toString() === req.user._id) {
         return cardModel
-          .findByIdAndRemove(cardId)
+          .deleteOne({ _id: cardId })
           .orFail()
           .then((cardDelete) => res.status(OK_STATUS).send(cardDelete))
           .catch(next);
