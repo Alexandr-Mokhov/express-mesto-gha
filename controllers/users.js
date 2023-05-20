@@ -1,10 +1,26 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
+const AuthorisationError = require('../errors/AuthorisationError');
+const ConflictingRequestError = require('../errors/ConflictingRequestError');
 const {
   OK_STATUS,
   CREATED_STATUS,
 } = require('../statusCodes');
+
+function findByIdUser(id, res, next) {
+  userModel.findById(id)
+    .orFail()
+    .then((user) => res.status(OK_STATUS).send(user))
+    .catch(next);
+}
+
+function updateUser(id, reqBody, res, next) {
+  userModel.findByIdAndUpdate(id, reqBody, { new: true, runValidators: true })
+    .orFail()
+    .then((user) => res.status(OK_STATUS).send(user))
+    .catch(next);
+}
 
 const getUsers = (req, res, next) => {
   userModel.find({})
@@ -13,11 +29,7 @@ const getUsers = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  const { userId } = req.params;
-  userModel.findById(userId)
-    .orFail()
-    .then((user) => res.status(OK_STATUS).send(user))
-    .catch(next);
+  findByIdUser(req.params.userId, res, next);
 };
 
 const createUser = (req, res, next) => {
@@ -29,31 +41,28 @@ const createUser = (req, res, next) => {
       email: req.body.email,
       password: hash,
     }))
-    .then((user) => res.status(CREATED_STATUS).send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      email: user.email,
-    }))
-    .catch(next);
+    .then((user) => {
+      res.status(CREATED_STATUS).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
+    })
+    .catch((err) => { // сомневаюсь, уместно ли тут и в таком виде обработать эту ошибку?
+      if (err.code === 11000) {
+        return next(new ConflictingRequestError('Такой E-mail уже зарегистрирован.'));
+      }
+      return next(err);
+    });
 };
 
-const updateUserInfo = (req, res, next) => {
-  const { _id } = req.user;
-  const { name, about } = req.body;
-  userModel.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
-    .orFail()
-    .then((user) => res.status(OK_STATUS).send(user))
-    .catch(next);
+const updateUserInfo = (req, res, next) => { // вроде работает, так норм?))
+  updateUser(req.user._id, { name: req.body.name, about: req.body.about }, res, next);
 };
 
 const updateUserAvatar = (req, res, next) => {
-  const { _id } = req.user;
-  const { avatar } = req.body;
-  userModel.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
-    .orFail()
-    .then((user) => res.status(OK_STATUS).send(user))
-    .catch(next);
+  updateUser(req.user._id, { avatar: req.body.avatar }, res, next);
 };
 
 const login = (req, res, next) => {
@@ -61,16 +70,15 @@ const login = (req, res, next) => {
   userModel.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Authorisation Error'));
+        return Promise.reject(new AuthorisationError('Неправильные почта или пароль.'));
       }
-
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Authorisation Error'));
+            return Promise.reject(new AuthorisationError('Неправильные почта или пароль.'));
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res.send({ token }); // попробую передать через куки
+          return res.send({ token });
         })
         .catch(next);
     })
@@ -78,10 +86,7 @@ const login = (req, res, next) => {
 };
 
 const getCurrentUser = (req, res, next) => {
-  userModel.findById(req.user._id)
-    .orFail()
-    .then((user) => res.status(OK_STATUS).send(user))
-    .catch(next);
+  findByIdUser(req.user._id, res, next);
 };
 
 module.exports = {

@@ -1,4 +1,5 @@
 const cardModel = require('../models/card');
+const ForbiddenError = require('../errors/ForbiddenError');
 const {
   OK_STATUS,
   CREATED_STATUS,
@@ -31,7 +32,7 @@ const deleteCard = (req, res, next) => {
           .then((cardDelete) => res.status(OK_STATUS).send(cardDelete))
           .catch(next);
       }
-      return Promise.reject(new Error('FORBIDDEN_ERROR'));
+      return Promise.reject(new ForbiddenError('Удаление карточки другого пользователя запрещено.'));
     })
     .catch(next);
 };
