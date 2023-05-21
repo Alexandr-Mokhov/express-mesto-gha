@@ -37,26 +37,23 @@ const deleteCard = (req, res, next) => {
     .catch(next);
 };
 
-const likeCard = (req, res, next) => {
+function updateCard(control, req, res, next) {
   cardModel.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
-    .orFail()
-    .then((card) => res.status(CREATED_STATUS).send(card))
-    .catch(next);
-};
-
-const dislikeCard = (req, res, next) => {
-  cardModel.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
+    control,
     { new: true },
   )
     .orFail()
     .then((card) => res.status(OK_STATUS).send(card))
     .catch(next);
+}
+
+const likeCard = (req, res, next) => {
+  updateCard({ $addToSet: { likes: req.user._id } }, req, res, next);
+};
+
+const dislikeCard = (req, res, next) => {
+  updateCard({ $pull: { likes: req.user._id } }, req, res, next);
 };
 
 module.exports = {

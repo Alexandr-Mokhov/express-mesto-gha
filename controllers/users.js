@@ -57,7 +57,7 @@ const createUser = (req, res, next) => {
     });
 };
 
-const updateUserInfo = (req, res, next) => { // вроде работает, так норм?))
+const updateUserInfo = (req, res, next) => {
   updateUser(req.user._id, { name: req.body.name, about: req.body.about }, res, next);
 };
 
