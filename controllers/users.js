@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
 const AuthorisationError = require('../errors/AuthorisationError');
-const ConflictingRequestError = require('../errors/ConflictingRequestError');
 const {
   OK_STATUS,
   CREATED_STATUS,
@@ -49,12 +48,7 @@ const createUser = (req, res, next) => {
         email: user.email,
       });
     })
-    .catch((err) => { // сомневаюсь, уместно ли тут и в таком виде обработать эту ошибку?
-      if (err.code === 11000) {
-        return next(new ConflictingRequestError('Такой E-mail уже зарегистрирован.'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 const updateUserInfo = (req, res, next) => {
