@@ -7,6 +7,7 @@ const NotFoundError = require('./errors/NotFoundError');
 const BadRequestError = require('./errors/BadRequestError');
 const ConflictingRequestError = require('./errors/ConflictingRequestError');
 const config = require('./config');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 const limiter = rateLimit(
@@ -20,9 +21,11 @@ const limiter = rateLimit(
 
 mongoose.connect(config.mongodbLink);
 
+app.use(requestLogger);
 app.use(limiter);
 app.use(express.json());
 app.use(router);
+app.use(errorLogger);
 // app.use(errors()); // для вывода стандартных ошибок от Joi
 
 // eslint-disable-next-line no-unused-vars
